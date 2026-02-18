@@ -40,6 +40,7 @@ services:
       dockerfile: apps/web/Dockerfile
     container_name: kc-web
     environment:
+      HOSTNAME: 0.0.0.0
       API_BASE_URL: http://api:4000
     ports:
       - "3000:3000"
