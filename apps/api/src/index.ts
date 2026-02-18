@@ -28,6 +28,21 @@ function toIsoString(value: unknown): string {
 
 app.use(cors());
 app.use(express.json());
+app.use((req, res, next) => {
+  const startedAt = Date.now();
+
+  res.on("finish", () => {
+    const durationMs = Date.now() - startedAt;
+    const ip = req.ip || req.socket.remoteAddress || "unknown";
+    const userAgent = req.get("user-agent") || "unknown";
+
+    console.log(
+      `[http] ${req.method} ${req.originalUrl} ${res.statusCode} ${durationMs}ms ip=${ip} ua="${userAgent}"`
+    );
+  });
+
+  next();
+});
 
 app.get("/whoami", (_req, res) => {
   const payload: WhoAmIResponse = {
