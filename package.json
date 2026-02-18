@@ -1,0 +1,12 @@
+{
+  "name": "k8s-competence",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@10.29.3",
+  "scripts": {
+    "dev:web": "pnpm --filter @kc/web dev",
+    "dev:api": "pnpm --filter @kc/api dev",
+    "build": "pnpm -r build",
+    "typecheck": "pnpm -r typecheck"
+  }
+}
