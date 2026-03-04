@@ -29,6 +29,7 @@ function toIsoString(value: unknown): string {
 app.use(cors());
 app.use(express.json());
 app.use((req, res, next) => {
+  res.setHeader("Connection", "close");
   const startedAt = Date.now();
 
   res.on("finish", () => {
