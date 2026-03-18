@@ -62,10 +62,22 @@ By default, API expects Postgres at:
 
 For local non-k8s testing, override env vars for API as needed.
 
-## 5. Start Minikube and enable ingress
+## 5. Start Minikube
 ```bash
 minikube start
+```
+
+If you want to use the Minikube ingress addon:
+
+```bash
 minikube addons enable ingress
+```
+
+If the addon is unreliable in your environment, use the bundled ingress controller instead:
+
+```bash
+kubectl apply -f infra/k8s/ingress-nginx/install.yaml
+kubectl -n ingress-nginx rollout status deployment/ingress-nginx-controller
 ```
 
 ## 6. Quick test with Docker Compose
@@ -128,19 +140,26 @@ kubectl get pods,svc,ingress
 
 Wait until all pods are `Running` and ready.
 
-## 10. Access the app (IP-only ingress)
-```bash
-minikube ip
-minikube service -n ingress-nginx ingress-nginx-controller --url
-```
+## 10. Access the app
 
-Use the ingress controller URL from the command above. If direct ingress access is not reachable in your environment, use port-forward fallback:
+### Option A: bundled ingress controller with port-forward
+
+This is the most reliable option for workshop/demo environments:
 
 ```bash
 kubectl -n ingress-nginx port-forward svc/ingress-nginx-controller 8080:80
 ```
 
 Then open `http://127.0.0.1:8080`.
+
+### Option B: Minikube ingress addon (IP-based)
+
+```bash
+minikube ip
+minikube service -n ingress-nginx ingress-nginx-controller --url
+```
+
+Use the ingress controller URL from the command above.
 
 ## 11. Demo flow
 1. Open app and verify status panel reports Next.js + API + DB.
@@ -160,7 +179,10 @@ kubectl delete pod db-0
 ```
 
 ## 12. Troubleshooting
-- Ingress has no address yet:
+- Bundled ingress controller not ready:
+  - check: `kubectl -n ingress-nginx get pods`
+  - check: `kubectl -n ingress-nginx logs deploy/ingress-nginx-controller`
+- Minikube ingress addon has no address yet:
   - wait 1-2 minutes after enabling addon
   - check: `kubectl -n ingress-nginx get pods`
 - `ImagePullBackOff` for web/api:
